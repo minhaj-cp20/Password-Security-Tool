@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Security Tool</title>
+
+    <style>
+        
+        
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #0b1120;
+        color: #e5e7eb;
+        min-height: 100vh;
+        padding: 30px 16px;
+    }
+
+    .container {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 30px;
+        background: #151e30;
+        border: 1px solid #29364b;
+        border-radius: 16px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    h1 {
+        color: #38bdf8;
+        margin-bottom: 16px;
+    }
+
+    p {
+        color: #cbd5e1;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    label {
+        display: block;
+        text-align: left;
+        font-weight: bold;
+        margin: 20px 0 10px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 14px;
+        border: 1px solid #475569;
+        border-radius: 8px;
+        background: #0b1120;
+        color: white;
+        font-size: 16px;
+    }
+
+    button {
+        padding: 12px 20px;
+        margin: 6px 4px;
+        border: none;
+        border-radius: 8px;
+        background: #0284c7;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    button:hover {
+        background: #0369a1;
+    }
+
+    .status {
+        background: #12372a;
+        color: #86efac;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 25px;
+    }
+
+    ul {
+        display: inline-block;
+        text-align: left;
+        color: #cbd5e1;
+        line-height: 1.8;
+        overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 500px) {
+        body {
+            padding: 16px 10px;
+        }
+
+        .container {
+            padding: 20px 14px;
+        }
+    }
+
+    .error-message {
+    background: #450a0a;
+    color: #fca5a5;
+    border: 1px solid #ef4444;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>My CyberSecurity Project</h1>
+
+        <p>
+            Analyze password strength, detect common weaknesses,
+            and generate stronger passwords.
+        </p>
+    <form action="/analyze" method="POST">    
+        <label>Enter your test Password:</label>
+        <input type="password" id ="password"  name="password">
+
+
+<br>
+<br>
+        <button type="submit">Password Analyze</button>
+    </form>
+    <label for="passwordLength">"select your password length"</label>
+
+    <select id="passwordLength">
+        <option value="8">8 characters</option>
+        <option value="12">12 characters</option>
+        <option value="16">16 characters</option>
+        <option value="24">24 characters</option>
+    </select>
+    <br><br>
+    <button type="button" onclick="generatePassword()">
+    Generate Password
+</button>
+
+<p id="generatedPassword"></p>
+   {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+{% endif %}
+    {% if result %}
+    <p style="white-space: pre-line;">{{ result }}</p>
+    <p>Password Score: {{ score}}/100</p>
+    <p>Password Strength: {{ strength }}</p>
+    <h1>Recommendations for improvement:</h1>
+    <ul style="display: inline-block; text-align: left;">
+    {% for suggestion in recommendations %}
+        <li>{{ suggestion }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+        <div class="status">
+            Your cybersecurity project is ready to start!
+        </div>
+
+        <p>Welcome to your first web application.</p>
+    </div>
+<script>
+
+ 
+function generatePassword() {
+    const length = document.getElementById("passwordLength").value;
+
+    fetch("/generate-password?length=" + length)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("password").value =
+                data.password;
+
+            document.getElementById("generatedPassword").textContent =
+                "Generated password: " + data.password;
+
+
+            sessionStorage.setItem("generatedPassword", data.password);
+document.querySelector('form[action="/analyze"]').requestSubmit();
+        })
+        .catch(error => {
+            console.error("Error generating password:", error);
+        });
+}
+
+
+window.addEventListener("DOMContentLoaded", function() {
+    const savedPassword = sessionStorage.getItem("generatedPassword");
+
+    if (savedPassword) {
+        document.getElementById("generatedPassword").textContent =
+            "Generated password: " + savedPassword;
+
+        sessionStorage.removeItem("generatedPassword");
+    }
+});
+
+
+
+</script>
+</body>
+</html>
